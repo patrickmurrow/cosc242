@@ -1,0 +1,17 @@
+#include <stdio.h>
+#include <stdlib.h>
+/*
+ * "swap" wants the memory addresses of
+ */
+void swap(int *x, int *y) {
+   int temp = *x;
+   *x = *y;
+   *y = temp;
+}
+int main(void) {
+   int a = 3, b = 4;
+   printf("a = %d, b = %d\n", a, b);
+   swap(&a, &b); /* pass the addresses of a and b */
+   printf("a = %d, b = %d\n", a, b);
+   return EXIT_SUCCESS;
+}

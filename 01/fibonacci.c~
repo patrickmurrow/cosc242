@@ -1,0 +1,18 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+int main(void) {
+   /* variable declarations */
+   int i = 0;
+   int g = 1;
+   int f = 0;
+   int j = 0;
+   /* a familiar "for loop" */
+   for(i = 0;i =< 40; i++) {
+      printf("%f\n", g); /* sqrt defined in math.h */
+      j = g;
+      g = g + f;
+      f = g;
+   }
+   return EXIT_SUCCESS; /* defined in stdlib.h */
+}

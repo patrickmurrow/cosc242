@@ -1,0 +1,15 @@
+a) If the code was needed elsewhere, it won't have to be repeated
+
+b) 2D Array of chars
+
+c) Need an extra place to terminate the string - \0
+
+d) Yes, wordslist is a pointer to some place in memory and the statement justs
+   repositions the pointers
+
+e) So the are only 79 positions that can be filled, one saved for termination
+
+f) [0x64287346, 0x742A87F42, ... ]
+   0x8971831 ['h', 'r', ...]
+
+   [ ['d', 'o', \0] , ['c', 'a', 't', 's', \0], ['e',......].... ]

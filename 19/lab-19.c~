@@ -1,0 +1,17 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include "queue.h"
+
+int main(void) {
+   double d;
+   queue my_queue = queue_new();
+   
+   while (1 == scanf("%f", d)) {
+      queue_enqueue(my_queue, d);
+   }
+ 
+   htable_print(my_queue);
+   htable_free(my_queue);
+   
+   return EXIT_SUCCESS;
+}

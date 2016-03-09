@@ -1,0 +1,52 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "mylib.h"
+#include "graph.h"
+
+typedef enum { UNVISITED, VISITED_SELF, VISITED_DESCENDANTS } state_t;
+
+struct vertex {
+   int predecessor;
+   int distance;
+   state_t state;
+   int finish;
+};
+
+struct graphrec {
+   vertex *vertices;
+   int **edges;
+   int size;
+};
+
+graph graph_new(int capacity){
+   unsigned int = 0;
+   graph result = emalloc(sizeof * result);
+   result->size = capacity;
+   result->vertices = emalloc(result->size * sizeof result->vertices[0]);
+   result->edges = (int **)emalloc(result->size * sizeof(int*));
+   for(i = 0; i < result->size; i++){
+      result->edges[i] = (int *)malloc(result->size * sizeof(int));
+   }
+   for(i = 0; i < result->size; i++){
+      result->vertices[i].predecessor = -1;
+      result->vertices[i].state = UNVISITED;
+      result->vertices[i].distance = -1;
+      result->vertices[i].finish = 0;
+   }
+   return result;
+}
+
+char graph_add_edge(graph g, int u, int v, int dist){
+   g->edges[u][v] = dist;
+   g->vertices//////////////////
+}
+
+
+graph void graph_print(graph h, FILE *stream);
+
+
+graph int graph_search(graph h, char *str);
+
+
+void graph_free(graph g);

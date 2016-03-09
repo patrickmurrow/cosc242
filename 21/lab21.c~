@@ -1,0 +1,25 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include "graph.h"
+
+int main(void) {
+   int d = 0;
+   graph my_graph = graph_new();
+   char op;
+
+   while (1 == scanf(" %c", &op)) {
+      if ('+' == op) {
+         if (1 == scanf("%d", &d)){
+            graph_add_edge(my_graph, d);
+         }
+      else if ('*' == op) {
+         graph_print(my_graph);
+      }
+      else if ('?' == op) {
+         graph_bfs(my_graph);
+      }
+   }
+   graph_free(my_graph);
+   
+   return EXIT_SUCCESS;
+}

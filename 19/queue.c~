@@ -1,0 +1,49 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "queue.h"
+#include "mylib.h"
+
+struct queue {
+   double *items;
+   int head;
+   int capacity;
+   int num_items;
+};
+
+queue queue_new() {
+   queue result = emalloc(sizeof * result);
+   result->capacity = 5;
+   result->head = 0;
+   result->num_items = 0;
+   result->items = emalloc(result->capacity * sizeof result->items[0]);
+   return result;
+}
+
+void enqueue(queue q, double item) {
+   if (q->num_items < q->capacity) {
+      q[q->head + q->num_items % q->capacity] = item;
+      q->num_items++;
+   }
+}
+
+double dequeue(queue q) {
+   int temp = q->head;
+   if (q->num_items > 0) {
+      q->head--;
+      q->num_items--;
+      return item[temp];
+   }
+}
+
+void queue_print(queue q) {
+
+}
+
+int queue_size(queue q) {
+   return num_items;
+}
+
+queue queue_free(queue q) {
+
+}

@@ -1,0 +1,212 @@
+#include <stdio.h>
+#include <getopt.h>
+#include <stdlib.h>
+#include <time.h>
+#include <string.h>
+#include "mylib.h"
+#include "htable.h"
+
+#define DEFAULT_SIZE_T 113
+#define DEFAULT_SIZE_S 10
+#define TRUE 1
+#define FALSE 0
+
+
+/**
+ * Finds the next prime number after the given Integer if it isn't a prime 
+ * number itself
+ *
+ * @param i the Integer where the next prime has to be after if it 
+ * isn't a prime itself
+ * 
+ * @return j - a prime number 
+ */
+static int next_prime(int i) {
+   int j = i;
+   int temp;
+   int k;
+
+   if (j == 1 || j == 2) {
+      return j;
+   }
+   for (;;) {
+      temp = j;
+      for (k = 2; k < j; k++) {
+         if (j % k == 0) {
+            j++;
+            break;
+         }
+      }
+      if (temp == j) {
+         return j; 
+      }
+   }
+}
+
+/**
+ * Prints out words alongside their frequencies to stdout that were
+ * read from stdin and added to your data structure.
+ *
+ * @param freq - the frequency of the corresponding word in the hash table
+ * @param word - the key in hash table to be printed
+ */
+static void print_info(int freq, char *word) {
+   printf("%-4d %s\n", freq, word);
+}
+
+/**
+ * Prints out the functionalities of the file and each of the cases
+ *
+ * @param stream - the stream to send output to.
+ */
+static void print_usage(FILE *stream){
+   fprintf(stream, "%s\n%s\n%s\n\n",
+           "Perform various operations using a hash table.  By default, words are",
+           "read from stdin and added to the hash table, before being printed out",
+           "alongside their frequencies to stdout.");
+
+   fprintf(stream, "%s\n%s\n%s\n",
+           " -c FILENAME  Check spelling of words in FILENAME using words",
+           "              from stdin as dictionary.  Print unknown words to",
+           "              stdout, timing info & count to stderr (ignore -p)");
+   fprintf(stream,
+           " -d           Use double hashing (linear probing is the default)\n");
+   fprintf(stream,
+           " -e           Display entire contents of hash table on stderr\n");
+   fprintf(stream,
+           " -p           Print stats info instead of frequencies & words\n");
+   fprintf(stream,
+           " -s SNAPSHOTS Show SNAPSHOTS stats snapshots (if -p is used)\n");
+   fprintf(stream,
+           " -t TABLESIZE Use the first prime >= TABLESIZE as htable size\n\n");
+   fprintf(stream,
+           " -h           Display this message\n");
+}
+
+/**
+ * Performs various operations using a hash table. By default, words are
+ * read from stdin and added to the hash table, before being printed out
+ * alongside their frequencies to stdout.
+ *
+ * -c FILENAME --> Check spelling of words in FILENAME using words
+ *     from stdin as dictionary.  Print unknown words to stdout, timing 
+ *     info & count to stderr.
+ * -d --> Use double hashing (linear probing is the default)
+ * -e --> Display entire contents of hash table on stderr\n");
+ * -p --> Print stats info instead of frequencies & words\n");
+ * -s SNAPSHOTS --> Show SNAPSHOTS stats snapshots (if -p is used)\n");
+ * -t TABLESIZE Use the first prime >= TABLESIZE as htable size\n\n");
+ * -h --> Display this message\n"); * Takes command line arguments to 
+ *     perform a number of tasks on the hash table
+ *
+ * @param argc the number of arguments
+ * @param argv the command line argument
+ */
+int main(int argc, char **argv){
+  
+   hashing_t resolution = LINEAR_P;
+   clock_t start;
+   double search_time = 0;
+   double fill_time = 0;
+   int unknown_word_count = 0;
+   int table_size = DEFAULT_SIZE_T;
+   int num_stats = DEFAULT_SIZE_S;
+   int freq_and_words = TRUE;
+   int flag_c = FALSE, flag_e = FALSE, flag_p = FALSE;
+   const char *optstring = "c:deps:t:h";
+   char option;
+   char filename[256];
+   htable h = NULL;
+   FILE *file;
+   char word[256];
+
+   while ((option = getopt(argc, argv, optstring)) != EOF) {
+      switch(option) {
+      case ':':
+
+         fprintf(stderr, "%s: option requires an argument -- '%c'", 
+                 argv[0], optopt);
+         exit(EXIT_FAILURE);
+      case 'c':
+
+         strcpy(filename, optarg);
+         freq_and_words = FALSE;
+         flag_c = TRUE;
+         flag_p = FALSE;
+         break;
+      case 'd':
+      
+         resolution = DOUBLE_H;
+         break;
+      case 'e':
+
+         flag_e = TRUE;
+         break;
+      case 'p':
+
+         freq_and_words = FALSE;
+         if (!flag_c) {
+            flag_p = TRUE;
+         }
+         break;
+      case 's':
+
+         num_stats = atoi(optarg);
+         break;
+      case 't':
+
+         table_size = next_prime(atoi(optarg));
+         break;
+      case 'h':
+
+         fprintf(stderr, "Usage: %s [OPTION]... <STDIN>\n\n", argv[0]);
+         print_usage(stderr);
+         exit(EXIT_SUCCESS);
+      default:
+
+         fprintf(stderr, "Usage: %s [OPTION]... <STDIN>\n\n", argv[0]);
+         print_usage(stderr);
+         exit(EXIT_FAILURE);
+      }
+   }
+   h = htable_new(table_size, resolution);
+  
+   while (getword(word, sizeof word, stdin) != EOF) {
+      start = clock();
+      htable_insert(h, word);
+      fill_time += (clock()-start)/ (double) CLOCKS_PER_SEC;
+   }
+     
+   if (flag_e) {
+      htable_print_entire_table(h, stdout);
+   }
+   if (flag_p) {
+      htable_print_stats(h, stderr, num_stats);
+   }
+   if (flag_c) {
+      file = fopen(filename, "r");
+
+      while (getword(word, sizeof word, file) != EOF) {
+         start = clock();
+
+         if (htable_search(h, word) == 0) {
+            fprintf(stderr, "%s\n", word);
+            unknown_word_count++;
+         }
+
+         search_time += (clock() - start) / (double) CLOCKS_PER_SEC;
+      } 
+      printf("Fill time     : %f\n", fill_time);
+      printf("Search time   : %f\n", search_time);
+      printf("Unknown words = %d\n", unknown_word_count);
+   } 
+
+   if (freq_and_words) {
+      htable_print(h, print_info);
+   }
+
+   htable_free(h);
+
+
+   return EXIT_SUCCESS;
+}

@@ -1,0 +1,87 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include "mylib.h"
+#include "flexarray.h"
+
+struct flexarrayrec {
+   int capacity;
+   int itemcount;
+   int *items;
+};
+
+flexarray flexarray_new() {
+   flexarray result = emalloc(sizeof *result);
+   result->capacity = 2;
+   result->itemcount = 0;
+   result->items = emalloc(result->capacity * sizeof result->items[0]);
+   return result;
+}
+
+void flexarray_append(flexarray f, int num) {
+   if (f->itemcount == f->capacity) {
+      f->capacity += f->capacity;
+      f = erealloc(f, f->capacity * sizeof f[0]);
+   }
+   f[f->itemcount++] = f->item;
+}
+
+void flexarray_print(flexarray f) {
+   int i;
+   for (i = 0; i < n; i++) {
+      printf("%d\n", f[i]);
+   }
+}
+
+void merge(int *a, int *w, int len) {
+   int m = len/2;
+   int i = 0, j = m, k = 0;
+   while (i < m && j < len)
+      {
+         if (a[i] < a[j])       
+            w[k++] = a[i++];
+
+         else        
+            w[k++] = a[j++];               
+      }
+
+   while (i < m)  
+      w[k++] = a[i++];
+
+
+   while (j < len)    
+      w[k++] = a[j++];  
+}
+
+void insertion_sort(int *a, int n) {
+   int p = 0;
+   int key = 0;
+   for (p = 1; p < n; p++){
+      key = a[p];
+      int i = 0;
+      for (i = p; i>=0; i--){
+         if (a[i-1] > key){
+            a[i] = a[i-1];
+            a[i-1] = key;
+         }
+      }
+   }
+}
+
+void flexarray_sort(flexarray f) {
+   int i = 0, m = (n/2);
+   if (n < 40) {
+      insertion_sort(a, n);
+   }
+   else{
+      flexarray_sort(a, w, m);
+      flexarray_sort(a + m, w + m, n-m);
+      merge(a, w, n);
+      for (i = 0; i < n; i++){
+         a[i] = w[i];
+      }
+   }
+}
+}
+void flexarray_free(flexarray f) {
+   free(f);
+}

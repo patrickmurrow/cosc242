@@ -1,0 +1,86 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include "flexarray.h"
+
+struct flexarrayrec {
+int capacity;
+int itemcount;
+int *items;
+};
+
+void swap(int *a, int y, int x){
+  int temp;
+  temp = a[x];
+  a[x] = a[y];
+  a[y] = temp;
+}
+
+void selection_sort(int *a, int n) {
+   int p = 0;
+   int i = 0;
+   int key = 0;
+   int x = 0;
+   for (p=0; p < n; p++){
+      key = a[p];
+      for(i = 0; i<p;i++){
+         if(key <a[i]){
+            swap(a,p,i);
+         }
+      }
+      if (p == ((n-1)/2)){
+         for (x = 0; x <n; x++){
+            fprintf(stderr, "%d\n", a[x]);
+         }
+      }
+   }
+}
+
+
+void insertion_sort(int *a, int n) {
+  int p = 0;
+  int key = 0;
+  int i = 0;
+  for (p = 1; p < n; p++){
+    key = a[p];
+    for (i = p; i>=0; i--){
+      if (a[i-1] > key){
+	a[i] = a[i-1];
+	a[i-1] = key;
+      }
+    }
+  }
+}
+
+flexarray flexarray_new() {
+  flexarray result = malloc(sizeof *result);
+  result->capacity = 2;
+  result->itemcount = 0;
+  result->items = malloc(result->capacity * sizeof result->items[0]);
+  return result;
+}
+void flexarray_append(flexarray f, int num) {
+  if (f->itemcount == f->capacity) {
+    f->capacity += f->capacity;
+    f->items = realloc(f->items, f->capacity * sizeof f->items[0]);
+  }
+  f->items[f->itemcount++] = num;
+}
+/* insert the item in the last free space */
+void flexarray_print(flexarray f) {
+  int i = 0;
+  for (i = 0; i < f->itemcount; i++){
+     printf("%d\n", f->items[i]);
+  }
+  
+  
+  /* a "for" loop to print out each cell of f->items */
+}
+void flexarray_sort(flexarray f) {
+  selection_sort(f->items, f->itemcount);
+  /* mergesort would be good */
+}
+void flexarray_free(flexarray f) {
+  free(f->items);
+  free(f);
+  /* free the memory associated with the flexarray */
+}
